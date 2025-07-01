@@ -1,0 +1,29 @@
+{
+    "name": "com.red.unity-utils",
+    "version": "0.0.15-Pre-Release",
+    "displayName": "Unity Utils",
+    "description": "",
+    "type": "tool",
+    "unity": "2020.3",
+    "hideInEditor": false,
+    "documentationUrl": "",
+    "changelogUrl": "",
+    "licensesUrl": "",
+    "keywords": [
+        "Utils",
+        "UI"
+    ],
+    "author": {
+        "name": "Niko \"Red\" Becker",
+        "email": "",
+        "url": ""
+    },
+    "dependencies": 
+    {
+        "com.unity.burst": "1.6.0",
+        "com.unity.collections": "1.5.1",
+        "com.unity.mathematics": "1.0.1",
+        "com.hextantstudios.utilities": "https://github.com/hextantstudios/com.hextantstudios.utilities.git",
+        "com.jimmycushnie.ui-shapes-kit_jimmyfork": "https://github.com/JimmyCushnie/ui-shapes-kit_jimmyfork.git"
+    }
+}
