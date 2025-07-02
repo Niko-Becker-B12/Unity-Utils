@@ -17,13 +17,13 @@ namespace RedsUtils
     public class GameManager : SingletonPersistent<GameManager>
     {
 
-        [Header("Cursor Settings")]
         public bool cursorLocked = true;
         public bool cursorInputForLook = true;
     
-        [Header("Quitting App Settings")]
+
         public static event Action OnTryingToQuit;
         public static event Action OnQuitConfirm;
+
 
         public override void Awake()
         {
