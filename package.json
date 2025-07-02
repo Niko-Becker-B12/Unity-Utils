@@ -1,6 +1,6 @@
 {
     "name": "com.red.unity-utils",
-    "version": "0.0.16-Pre-Release",
+    "version": "0.0.17-Pre-Release",
     "displayName": "Unity Utils",
     "description": "",
     "type": "tool",
@@ -23,7 +23,7 @@
         "com.unity.burst": "1.6.0",
         "com.unity.collections": "1.5.1",
         "com.unity.mathematics": "1.0.1",
-        "com.hextantstudios.utilities": "https://github.com/hextantstudios/com.hextantstudios.utilities.git",
-        "com.jimmycushnie.ui-shapes-kit_jimmyfork": "https://github.com/JimmyCushnie/ui-shapes-kit_jimmyfork.git"
+        "com.unity.localization": "1.5.3",
+        "com.hextantstudios.utilities": "https://github.com/hextantstudios/com.hextantstudios.utilities.git"
     }
 }
