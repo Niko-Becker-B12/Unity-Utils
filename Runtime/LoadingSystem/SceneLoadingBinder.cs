@@ -1,32 +1,35 @@
-using System;
-using Sirenix.OdinInspector;
-using UnityEngine;
-
-public class SceneLoadingBinder : MonoBehaviour
+namespace RedsUtils
 {
-    
-    [SerializeField]
-    bool fixedScene = false;
-    
-    [SerializeField, ShowIf("fixedScene")]
-    string sceneName;
-    
-    public bool onStart = false;
+    using System;
+    using Sirenix.OdinInspector;
+    using UnityEngine;
 
-
-    private void Start()
+    public class SceneLoadingBinder : MonoBehaviour
     {
-        
-        if(onStart)
-            SwitchScene(sceneName);
-        
-    }
-
-    public void SwitchScene(string scene)
-    {
-        
-        SceneLoadingManager.SwitchScene(scene);
-        
-    }
     
+        [SerializeField]
+        bool fixedScene = false;
+    
+        [SerializeField, ShowIf("fixedScene")]
+        string sceneName;
+    
+        public bool onStart = false;
+
+
+        private void Start()
+        {
+        
+            if(onStart)
+                SwitchScene(sceneName);
+        
+        }
+
+        public void SwitchScene(string scene)
+        {
+        
+            SceneLoadingManager.SwitchScene(scene);
+        
+        }
+    
+    }
 }
