@@ -17,22 +17,13 @@ namespace RedsUtils
     public class GameManager : SingletonPersistent<GameManager>
     {
 
-        public static event Action<string> OnPlayerNewCustomID;
-
-        [SerializeField] private string playerId;
-
-        public string PlayerId
-        {
-            get { return playerId; }
-            set
-            {
-
-                playerId = value;
-
-                OnPlayerNewCustomID?.Invoke(playerId);
-
-            }
-        }
+        [Header("Cursor Settings")]
+        public bool cursorLocked = true;
+        public bool cursorInputForLook = true;
+    
+        [Header("Quitting App Settings")]
+        public static event Action OnTryingToQuit;
+        public static event Action OnQuitConfirm;
 
         public override void Awake()
         {
@@ -48,6 +39,59 @@ namespace RedsUtils
         {
 
 
+
+        }
+        
+        public void Quit()
+        {
+
+            Application.Quit();
+
+        }
+    
+        private void OnApplicationFocus(bool hasFocus)
+        {
+            SetCursorState(cursorLocked);
+        }
+
+        public void SetCursorState(bool isLocked)
+        {
+        
+            Cursor.lockState = isLocked ? CursorLockMode.Locked : CursorLockMode.None;
+            cursorLocked = isLocked;
+
+        }
+        
+        static bool WantsToQuit()
+        {
+            Debug.Log("Player prevented from quitting.");
+
+            //ActivateQuitUI
+            OnTryingToQuit?.Invoke();
+
+            return false;
+        }
+
+        [RuntimeInitializeOnLoadMethod]
+        static void RunOnStart()
+        {
+            Application.wantsToQuit += WantsToQuit;
+        }
+
+        public void TryingToQuit()
+        {
+
+            OnTryingToQuit?.Invoke();
+
+        }
+
+        public void QuitConfirmButton()
+        {
+
+            // When pressing Confirmation-Button, unsubscribe from Event and the Quit Application
+            OnQuitConfirm?.Invoke();
+            Application.wantsToQuit -= WantsToQuit;
+            Application.Quit();
 
         }
 

@@ -1,22 +1,22 @@
 using System;
-
-namespace RedsUtils
-{
-    using Hextant;
-    using System.Collections.Generic;
-    using System.IO;
-    using UnityEngine;
-    using Sirenix.Serialization;
-    using Sirenix.OdinInspector;
-    using NUnit.Framework.Internal;
-    using System;
-    using UnityEngine.Android;
-    using UnityEngine.Localization.Settings;
+using Hextant;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
+using Sirenix.Serialization;
+using Sirenix.OdinInspector;
+using NUnit.Framework.Internal;
+using System;
+using UnityEngine.Android;
+using UnityEngine.Localization.Settings;
 
 #if UNITY_EDITOR
     using Hextant.Editor;
     using UnityEditor;
 #endif
+
+namespace RedsUtils
+{
 
     [Settings(SettingsUsage.RuntimeProject, "B12/Game Settings")]
     public sealed class RuntimeSettings : Settings<RuntimeSettings>
