@@ -7,6 +7,7 @@ using Sirenix.Serialization;
 using Sirenix.OdinInspector;
 using NUnit.Framework.Internal;
 using System;
+using System.Threading.Tasks;
 using UnityEngine.Android;
 using UnityEngine.Localization.Settings;
 
@@ -37,103 +38,8 @@ namespace RedsUtils
         }
 
         public List<RuntimeSettingsPropertyBase> properties = new List<RuntimeSettingsPropertyBase>();
-
-        /*
-    [OdinSerialize, PolymorphicDrawerSettings(ShowBaseType = false)]
-    [ShowInInspector]
-    [SerializeField]
-    public Dictionary<string, RuntimeSettingsPropertyBase> properties = new Dictionary<string, RuntimeSettingsPropertyBase>();
-
-
-    public string GetPropertyValue(string propertyName)
-    {
-
-        if (propertyName == null || string.IsNullOrWhiteSpace(propertyName))
-            return string.Empty;
-
-        RuntimeSettingsPropertyBase foundProperty = GetProperty(propertyName);
-
-        if (foundProperty == null)
-            return string.Empty;
-
-        return foundProperty.value.ToString();
-
-    }
-
-    public RuntimeSettingsPropertyBase GetProperty(string propertyName)
-    {
-
-        if (propertyName == null || string.IsNullOrWhiteSpace(propertyName))
-            return null;
-
-        RuntimeSettingsPropertyBase foundProperty;
         
-        if(properties.TryGetValue(propertyName, out foundProperty))
-            return foundProperty;
-        else
-            return null;
-
-    }
-
-    public void SetPropertyValue(string propertyName, string propertyValue)
-    {
-
-        if (propertyName == null || string.IsNullOrWhiteSpace(propertyName))
-            return;
-
-        RuntimeSettingsPropertyBase foundProperty = GetProperty(propertyName);
-
-        if (foundProperty == null)
-            return;
-
-        foundProperty.value = propertyValue;
-
-        SaveSettingsToJson();
-
-    }
-
-    public void SetPropertyValue(string propertyName, RuntimeSettingsPropertyBase newProperty)
-    {
-
-        if (propertyName == null || string.IsNullOrWhiteSpace(propertyName))
-            return;
-
-        RuntimeSettingsPropertyBase foundProperty = GetProperty(propertyName);
-
-        if (foundProperty == null)
-            return;
-
-        foundProperty.value = newProperty.value;
-
-        SaveSettingsToJson();
-
-    }
-
-    private void OnEnable()
-    {
-
-#if UNITY_EDITOR
-        SaveSettingsToJson();
-#else
-        if (File.Exists($"{Application.persistentDataPath}/B12-Settings.json"))
-        {
-
-            string jsonString = File.ReadAllText($"{Application.persistentDataPath}/B12-Settings.json");
-
-            JsonUtility.FromJsonOverwrite(jsonString, RuntimeSettings.instance);
-
-        }
-        else
-        {
-
-            SaveSettingsToJson();
-
-        }
-#endif
-
-    }
-
-    */
+        bool queuedSave = false;
 
         private void Awake()
         {
@@ -152,6 +58,53 @@ namespace RedsUtils
 
         }
 
+        public void AddProperty(RuntimeSettingsPropertyBase property)
+        {
+            
+            RuntimeSettingsPropertyBase foundProperty = GetProperty(property.name);
+
+            if (foundProperty != null)
+            {
+                
+                SetPropertyValue(property.name, property);
+                
+            }
+            else
+            {
+                
+                properties.Add(property);
+                HandleSaving();
+                
+            }
+            
+        }
+        
+        public void AddProperty(string propertyName, string propertyValue)
+        {
+            
+            RuntimeSettingsPropertyBase foundProperty = GetProperty(propertyName);
+
+            if (foundProperty != null)
+            {
+                
+                SetPropertyValue(propertyName, propertyValue);
+                
+            }
+            else
+            {
+
+                foundProperty = new RuntimeSettingsPropertyBase()
+                {
+                    name = propertyName,
+                    Value = propertyValue
+                };
+                
+                properties.Add(foundProperty);
+                HandleSaving();
+                
+            }
+            
+        }
 
         public string GetPropertyValue(string propertyName)
         {
@@ -228,8 +181,9 @@ namespace RedsUtils
 
         private void OnEnable()
         {
-
+            
 #if UNITY_ANDROID
+
         if (!Permission.HasUserAuthorizedPermission(Permission.ExternalStorageWrite))
         {
             Permission.RequestUserPermission(Permission.ExternalStorageWrite);
@@ -239,10 +193,6 @@ namespace RedsUtils
         {
             Permission.RequestUserPermission(Permission.ExternalStorageRead);
         }
-#endif
-
-
-#if UNITY_ANDROID
 
         if (PlayerPrefs.HasKey("Language"))
         {
@@ -299,6 +249,8 @@ namespace RedsUtils
         public void HandleSaving()
         {
 
+#if UNITY_EDITOR
+
             Debug.Log("Saving Settings");
 
             if (usePlayerPrefs)
@@ -310,24 +262,46 @@ namespace RedsUtils
                 SaveSettingsToJson();
             }
 
+#else
+            if(queuedSave)
+                return;
+
+            Debug.Log("Saving Settings");
+
+            if (usePlayerPrefs)
+            {
+                SaveSettingsToPlayerPrefs();
+            }
+            else
+            {
+                SaveSettingsToJson();
+            }
+            
+            queuedSave = false;
+#endif
+
         }
 
-        public static void SaveSettingsToJson()
+        static void SaveSettingsToJson()
         {
 
             Debug.Log("Saving Settings to Json");
+            
+            RuntimeSettings.instance.queuedSave = true;
 
             string jsonString = JsonUtility.ToJson(RuntimeSettings.instance, true);
-
+            
             File.WriteAllText($"{Application.persistentDataPath}/B12-Settings.json", jsonString);
 
         }
 
-        public static void SaveSettingsToPlayerPrefs()
+        static void SaveSettingsToPlayerPrefs()
         {
 
             Debug.Log("Saving Settings to PlayerPrefs");
-
+            
+            RuntimeSettings.instance.queuedSave = true;
+            
             PlayerPrefs.DeleteAll();
 
             for (int i = 0; i < RuntimeSettings.instance.properties.Count; i++)

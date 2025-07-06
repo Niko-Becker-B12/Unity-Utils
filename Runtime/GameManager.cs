@@ -17,8 +17,7 @@ namespace RedsUtils
     public class GameManager : SingletonPersistent<GameManager>
     {
 
-        public bool cursorLocked = true;
-        public bool cursorInputForLook = true;
+        protected RuntimeSettingsPropertyBase UseQuitSystemProperty;
     
 
         public static event Action OnTryingToQuit;
@@ -30,7 +29,7 @@ namespace RedsUtils
             base.Awake();
 
 #if UNITY_ANDROID
-        Unity.XR.Oculus.Performance.TrySetDisplayRefreshRate(90f);
+        Unity.XR.Oculus.Performance.TrySetDisplayRefreshRate(90);
 #endif
 
         }
@@ -38,38 +37,53 @@ namespace RedsUtils
         private void Start()
         {
 
+            RuntimeSettings.GetSettingsProvider();
 
+            UseQuitSystemProperty = RuntimeSettings.instance.GetProperty("UseQuitSystem");
 
-        }
-        
-        public void Quit()
-        {
+            if (UseQuitSystemProperty == null)
+            {
 
-            Application.Quit();
-
-        }
-    
-        private void OnApplicationFocus(bool hasFocus)
-        {
-            SetCursorState(cursorLocked);
-        }
-
-        public void SetCursorState(bool isLocked)
-        {
-        
-            Cursor.lockState = isLocked ? CursorLockMode.Locked : CursorLockMode.None;
-            cursorLocked = isLocked;
-
+                UseQuitSystemProperty = new RuntimeSettingsPropertyBase()
+                {
+                    name = "UseQuitSystem",
+                    Value = Boolean.TrueString,
+                };
+                
+                RuntimeSettings.instance.AddProperty(UseQuitSystemProperty);
+                
+            }
+            else
+            {
+                
+                UseQuitSystemProperty.Value = RuntimeSettings.instance.GetPropertyValue("UseQuitSystem");
+                
+            }
+            
         }
         
         static bool WantsToQuit()
         {
-            Debug.Log("Player prevented from quitting.");
 
-            //ActivateQuitUI
-            OnTryingToQuit?.Invoke();
+            if (GameManager.Instance.UseQuitSystemProperty.Value == Boolean.TrueString)
+            {
+                
+                //ActivateQuitUI
+                OnTryingToQuit?.Invoke();
 
-            return false;
+                return false;
+                
+            }
+            else
+            {
+
+                GameManager.Instance.QuitConfirm();
+                
+                return true;
+                
+            }
+
+
         }
 
         [RuntimeInitializeOnLoadMethod]
@@ -85,7 +99,7 @@ namespace RedsUtils
 
         }
 
-        public void QuitConfirmButton()
+        public void QuitConfirm()
         {
 
             // When pressing Confirmation-Button, unsubscribe from Event and the Quit Application
