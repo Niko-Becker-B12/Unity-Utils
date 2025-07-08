@@ -1,4 +1,4 @@
-namespace RedsUtils
+namespace RedsUtils.LoadingSystem
 {
     using System;
     using System.Threading.Tasks;
