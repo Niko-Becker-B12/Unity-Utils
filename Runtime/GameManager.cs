@@ -1,5 +1,4 @@
 using System;
-using Hextant.Editor;
 
 namespace RedsUtils
 {
@@ -37,9 +36,6 @@ namespace RedsUtils
 
         private void Start()
         {
-
-            //RuntimeSettings.GetSettingsProvider();
-            RuntimeSettings.instance.GetSettingsProvider();
 
             UseQuitSystemProperty = RuntimeSettings.instance.GetProperty("UseQuitSystem");
 
