@@ -1,18 +1,10 @@
 using System;
+using UnityEngine;
+
 
 namespace RedsUtils
 {
-    using Sirenix.OdinInspector;
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.Threading.Tasks;
-    using TMPro;
-    using UnityEngine;
-    using UnityEngine.Android;
-    using UnityEngine.SceneManagement;
-    using UnityEngine.Serialization;
-    using UnityEngine.UI;
+
 
     public class GameManager : SingletonPersistent<GameManager>
     {
